@@ -1,6 +1,6 @@
 # PHASE 1: REGISTRATION & LOGIN
 
-![Phase 1 Screenshot](assests/Screenshot 2025-11-23 233138.png)
+![Phase 1 Screenshot](grant_system/assets/Screenshot%202025-11-23%20233138.png)
 
 ### Key Implementation:
 - **Django Form:** `UserCreationForm` extended with `role` field  
@@ -10,7 +10,7 @@
 # PHASE 2: APPLICANT WORKFLOW
 
 ## Applicant Workflow
-![Applicant Workflow Screenshot](assets/image.png)
+![Applicant Workflow Screenshot](grant_system/assets/image.png)
 ## Django Components Used
 
 ### ✔ View  
@@ -41,8 +41,8 @@
 
 # PHASE 3: ADMIN WORKFLOW
 
-![Admin Screenshot 1](assests/Screenshot 2025-11-24 030109.png)
-![Admin Screenshot 2](assests/Screenshot 2025-11-24 030131.png)
+![Admin Screenshot 1](grant_system/assets/Screenshot%202025-11-24%20030109.png)
+![Admin Screenshot 2](grant_system/assets/Screenshot%202025-11-24%20030131.png)
 
 ## Django Components
 
@@ -66,4 +66,4 @@
 
 # PHASE 4: REVIEWER WORKFLOW (BLINDED REVIEW)
 
-![Reviewer Screenshot](assests/Screenshot 2025-11-24 030608.png)
+![Reviewer Screenshot](grant_system/assets/Screenshot%202025-11-24%20030608.png)
