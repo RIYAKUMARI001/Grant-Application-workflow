@@ -1,0 +1,5 @@
+
+# Project Python dependencies (kept minimal and human-friendly)
+# Add more packages as you need them for development or deployment
+
+Django>=4.2,<5

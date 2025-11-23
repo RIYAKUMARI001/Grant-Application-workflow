@@ -1,0 +1,27 @@
+venv/
+env/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Local environment variables
+.env
+
+# SQLite database (if used for local development)
+db.sqlite3
+
+# Uploaded media (don't commit user uploads)
+/media/
+
+# IDE/editor folders
+.vscode/
+
+# OS generated files
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+
+
