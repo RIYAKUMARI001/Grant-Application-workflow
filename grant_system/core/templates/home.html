@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Grant System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8 text-center">
+        <h1 class="display-4 mb-4">Grant Application System</h1>
+        <p class="lead mb-4">
+            Manage grant applications with role-based workflows, blinded reviews, and automated scoring.
+        </p>
+        
+        <div class="d-grid gap-3 d-md-flex justify-content-md-center">
+            <a href="{% url 'register' %}" class="btn btn-primary btn-lg px-5">
+                Register
+            </a>
+            <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg px-5">
+                Login
+            </a>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Applicants</h5>
+                        <p class="card-text">Submit grant applications and track their status in real-time.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Reviewers</h5>
+                        <p class="card-text">Review applications with blinded identity and provide scores.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Admins</h5>
+                        <p class="card-text">Manage applications, assign reviewers, and finalize decisions.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
