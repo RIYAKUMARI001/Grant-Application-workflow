@@ -1,27 +1,24 @@
+# Python cache files
+__pycache__/
+*.pyc
+
+# Virtual environment
 venv/
 env/
 
-# Python cache files
-__pycache__/
-*.py[cod]
-
-# Local environment variables
-.env
-
-# SQLite database (if used for local development)
+# Django database
 db.sqlite3
 
-# Uploaded media (don't commit user uploads)
-/media/
-
-# IDE/editor folders
-.vscode/
-
-# OS generated files
-Thumbs.db
-desktop.ini
-
-# Logs
+# Django logs
 *.log
 
+# Uploaded files
+/media/
 
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
