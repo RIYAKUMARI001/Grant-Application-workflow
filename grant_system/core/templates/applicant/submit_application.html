@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Submit Application{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Submit New Application</h2>
+    
+    <div class="card">
+        <div class="card-header">
+            <h4>Application Form</h4>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="{{ form.title.id_for_label }}" class="form-label">Project Title</label>
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                        <div class="text-danger">{{ form.title.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                        <div class="text-danger">{{ form.description.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <label for="{{ form.amount_requested.id_for_label }}" class="form-label">Amount Requested ($)</label>
+                    {{ form.amount_requested }}
+                    {% if form.amount_requested.errors %}
+                        <div class="text-danger">{{ form.amount_requested.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <label for="{{ form.document.id_for_label }}" class="form-label">Document Upload</label>
+                    {{ form.document }}
+                    <div class="form-text">Only PDF/DOCX files allowed. Maximum file size: 5MB.</div>
+                    {% if form.document.errors %}
+                        <div class="text-danger">{{ form.document.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-lg">Submit Application</button>
+                <a href="{% url 'applicant_dashboard' %}" class="btn btn-secondary btn-lg">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

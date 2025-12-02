@@ -1,27 +1,21 @@
-venv/
-env/
-
 # Python cache files
 __pycache__/
 *.py[cod]
 
-# Local environment variables
-.env
-
-# SQLite database (if used for local development)
+# Django development database
 db.sqlite3
 
-# Uploaded media (don't commit user uploads)
-/media/
+# Media files uploaded by users
+media/
 
-# IDE/editor folders
+# IDE files
 .vscode/
+.idea/
 
 # OS generated files
+.DS_Store
 Thumbs.db
-desktop.ini
 
-# Logs
-*.log
-
-
+# Python virtual environment
+venv/
+env/

@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Assign Reviewers{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Assign Reviewers</h2>
+    
+    <!-- Application Details -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Application Details</h4>
+        </div>
+        <div class="card-body">
+            <p><strong>Title:</strong> {{ application.title }}</p>
+            <p><strong>Applicant:</strong> {{ application.applicant.email }}</p>
+            <p><strong>Amount Requested:</strong> ${{ application.amount_requested }}</p>
+            <p><strong>Description:</strong></p>
+            <p>{{ application.description }}</p>
+        </div>
+    </div>
+    
+    <!-- Assign Reviewers Form -->
+    <div class="card">
+        <div class="card-header">
+            <h4>Available Reviewers</h4>
+        </div>
+        <div class="card-body">
+            {% if reviewers %}
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    {% for reviewer in reviewers %}
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" 
+                               id="reviewer_{{ reviewer.id }}" 
+                               name="reviewers" 
+                               value="{{ reviewer.id }}"
+                               {% if reviewer.id in assigned_reviewers %}checked{% endif %}>
+                        <label class="form-check-label" for="reviewer_{{ reviewer.id }}">
+                            {{ reviewer.username }} ({{ reviewer.email }})
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-lg">Assign Selected</button>
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary btn-lg">Cancel</a>
+            </form>
+            {% else %}
+            <p class="text-muted">No reviewers available.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

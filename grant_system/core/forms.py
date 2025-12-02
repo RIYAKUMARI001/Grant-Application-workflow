@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import User
+from .models import User, Application
 
 class UserRegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -22,3 +22,27 @@ class UserRegistrationForm(UserCreationForm):
         super().__init__(*args, **kwargs)
         self.fields['password1'].widget.attrs.update({'class': 'form-control'})
         self.fields['password2'].widget.attrs.update({'class': 'form-control'})
+
+class ApplicationForm(forms.ModelForm):
+    class Meta:
+        model = Application
+        fields = ['title', 'description', 'amount_requested', 'document']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+            'amount_requested': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'document': forms.FileInput(attrs={'class': 'form-control'}),
+        }
+    
+    def clean_document(self):
+        document = self.cleaned_data.get('document')
+        if document:
+            # Check file extension
+            if not document.name.endswith(('.pdf', '.docx')):
+                raise forms.ValidationError("Only PDF and DOCX files are allowed.")
+            
+            # Check file size (5MB max)
+            if document.size > 5 * 1024 * 1024:  # 5MB in bytes
+                raise forms.ValidationError("File size must be under 5MB.")
+                
+        return document

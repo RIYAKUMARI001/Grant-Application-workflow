@@ -3,13 +3,84 @@
 {% block title %}Reviewer Dashboard{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-12">
-        <h2 class="mb-4">Reviewer Dashboard</h2>
-        <div class="alert alert-info">
-            <h4>Welcome, {{ user.username }}!</h4>
-            <p>You are logged in as a <strong>Reviewer</strong>.</p>
-            <p class="mb-0">This dashboard will be implemented in Phase 4.</p>
+<div class="container mt-4">
+    <h2 class="mb-4">Reviewer Dashboard</h2>
+    
+    <div class="alert alert-info">
+        <h4>Welcome, {{ user.username }}!</h4>
+        <p>You are logged in as a <strong>Reviewer</strong>.</p>
+    </div>
+    
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Pending Reviews</h5>
+                    <p class="card-text display-4">{{ pending_reviews }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Completed Reviews</h5>
+                    <p class="card-text display-4">{{ completed_reviews }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Assigned Reviews Table -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Assigned Reviews</h4>
+                </div>
+                <div class="card-body">
+                    {% if assigned_reviews %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Assigned Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for review in assigned_reviews %}
+                                <tr>
+                                    <td>{{ review.application.title }}</td>
+                                    <td>{{ review.assigned_at|date:"M d, Y" }}</td>
+                                    <td>
+                                        {% if review.completed %}
+                                            <span class="badge bg-success">Completed</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if not review.completed %}
+                                            <a href="{% url 'blinded_review' review.id %}" class="btn btn-sm btn-primary">
+                                                Start Review
+                                            </a>
+                                        {% else %}
+                                            <span class="text-muted">Review Completed</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">You don't have any assigned reviews.</p>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
 </div>

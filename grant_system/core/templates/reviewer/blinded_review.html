@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Blinded Review{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Blinded Review</h2>
+    
+    <div class="alert alert-warning">
+        <strong>⚠️ Blinded Review</strong> - Applicant identity is hidden to ensure unbiased evaluation.
+    </div>
+    
+    <!-- Application Details -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Application Details</h4>
+        </div>
+        <div class="card-body">
+            <p><strong>Title:</strong> {{ application.title }}</p>
+            <p><strong>Description:</strong></p>
+            <p>{{ application.description }}</p>
+            <p><strong>Amount Requested:</strong> ${{ application.amount_requested }}</p>
+            
+            {% if application.document %}
+                <p><strong>Document:</strong> <a href="{{ application.document.url }}" target="_blank" class="btn btn-sm btn-outline-primary">Download Document</a></p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Scoring Form -->
+    <div class="card">
+        <div class="card-header">
+            <h4>Scoring Form</h4>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                {% for rubric in rubrics %}
+                <div class="mb-4">
+                    <h5>{{ rubric.name }} (Max: {{ rubric.max_score }})</h5>
+                    
+                    <div class="mb-2">
+                        <label for="score_{{ rubric.id }}" class="form-label">Score (0-{{ rubric.max_score }}):</label>
+                        <input type="number" class="form-control" id="score_{{ rubric.id }}" name="score_{{ rubric.id }}" 
+                               min="0" max="{{ rubric.max_score }}" required>
+                    </div>
+                    
+                    <div class="mb-2">
+                        <label for="comments_{{ rubric.id }}" class="form-label">Comments:</label>
+                        <textarea class="form-control" id="comments_{{ rubric.id }}" name="comments_{{ rubric.id }}" 
+                                  rows="2"></textarea>
+                    </div>
+                </div>
+                {% endfor %}
+                
+                <button type="submit" class="btn btn-success btn-lg">Submit Review</button>
+                <a href="{% url 'reviewer_dashboard' %}" class="btn btn-secondary btn-lg">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
