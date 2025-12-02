@@ -107,17 +107,3 @@ grant_system/
 - CSRF protection on all forms
 - Secure password hashing
 
-### Admin Panel
-
-Create a superuser to access Django admin:
-
-```bash
-python manage.py createsuperuser
-```
-
-Visit: http://localhost:8000/admin/
-
----
-
-**Status**: ✅ Complete Implementation  
-**Author**: [Your Name]
