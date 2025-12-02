@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Application Details{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Application Details</h2>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>{{ application.title }}</h4>
+        </div>
+        <div class="card-body">
+            <p><strong>Applicant:</strong> {{ application.applicant.username }}</p>
+            <p><strong>Amount Requested:</strong> ${{ application.amount_requested }}</p>
+            <p><strong>Description:</strong></p>
+            <p>{{ application.description }}</p>
+            
+            <p><strong>Status:</strong> 
+                <span class="badge bg-{% if application.status == 'submitted' %}info{% elif application.status == 'in_review' %}warning{% elif application.status == 'decided' %}success{% endif %}">
+                    {{ application.get_status_display }}
+                </span>
+            </p>
+            
+            {% if application.final_decision is not None %}
+                <p><strong>Final Decision:</strong> 
+                    <span class="badge bg-{% if application.final_decision %}success{% else %}danger{% endif %}">
+                        {% if application.final_decision %}Approved{% else %}Rejected{% endif %}
+                    </span>
+                </p>
+            {% endif %}
+            
+            {% if application.document %}
+                <p><strong>Document:</strong> <a href="{{ application.document.url }}" target="_blank">Download</a></p>
+            {% endif %}
+        </div>
+    </div>
+    
+    {% if application.status == 'decided' and reviews %}
+    <div class="card">
+        <div class="card-header">
+            <h4>Review Feedback</h4>
+        </div>
+        <div class="card-body">
+            {% for review in reviews %}
+                <div class="border-bottom pb-3 mb-3">
+                    <h5>Review by Anonymous Reviewer</h5>
+                    {% for score in review.scores.all %}
+                        <div class="mb-2">
+                            <strong>{{ score.rubric.name }}:</strong> {{ score.score }}/{{ score.rubric.max_score }}
+                            {% if score.comments %}
+                                <br><small class="text-muted">{{ score.comments }}</small>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="mt-3">
+        <a href="{% url 'applicant_dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

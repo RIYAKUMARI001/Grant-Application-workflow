@@ -3,13 +3,126 @@
 {% block title %}Admin Dashboard{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-12">
-        <h2 class="mb-4">Admin Dashboard</h2>
-        <div class="alert alert-warning">
-            <h4>Welcome, {{ user.username }}!</h4>
-            <p>You are logged in as an <strong>Admin</strong>.</p>
-            <p class="mb-0">This dashboard will be implemented in Phase 3.</p>
+<div class="container mt-4">
+    <h2 class="mb-4">Admin Dashboard</h2>
+    
+    <div class="alert alert-warning">
+        <h4>Welcome, {{ user.username }}!</h4>
+        <p>You are logged in as an <strong>Admin</strong>.</p>
+    </div>
+    
+    <!-- System Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Total Applications</h5>
+                    <p class="card-text display-4">{{ total_applications }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Pending Assignment</h5>
+                    <p class="card-text display-4">{{ pending_assignment }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">In Review</h5>
+                    <p class="card-text display-4">{{ in_review }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Decided</h5>
+                    <p class="card-text display-4">{{ decided }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- All Applications Table -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>All Applications</h4>
+                </div>
+                <div class="card-body">
+                    {% if applications %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Applicant</th>
+                                    <th>Title</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for app in applications %}
+                                <tr>
+                                    <td>{{ app.id }}</td>
+                                    <td>{{ app.applicant.email }}</td>
+                                    <td>{{ app.title }}</td>
+                                    <td>
+                                        <span class="badge bg-{% if app.status == 'submitted' %}info{% elif app.status == 'in_review' %}warning{% elif app.status == 'decided' %}success{% endif %}">
+                                            {{ app.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if app.status == 'submitted' %}
+                                            <a href="{% url 'assign_reviewers' app.id %}" class="btn btn-sm btn-primary">
+                                                Assign Reviewers
+                                            </a>
+                                        {% elif app.status == 'in_review' %}
+                                            <a href="{% url 'view_scores' app.id %}" class="btn btn-sm btn-info">
+                                                View Scores
+                                            </a>
+                                        {% elif app.status == 'decided' %}
+                                            <a href="{% url 'view_scores' app.id %}" class="btn btn-sm btn-success">
+                                                View Results
+                                            </a>
+                                            {% if app.final_decision is None %}
+                                                <a href="{% url 'finalize_decision' app.id 'approve' %}" class="btn btn-sm btn-success">
+                                                    Approve
+                                                </a>
+                                                <a href="{% url 'finalize_decision' app.id 'reject' %}" class="btn btn-sm btn-danger">
+                                                    Reject
+                                                </a>
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No applications found.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Management Buttons -->
+    <div class="row">
+        <div class="col-md-12">
+            <a href="{% url 'manage_rubrics' %}" class="btn btn-secondary btn-lg me-2">
+                <i class="fas fa-cog"></i> Manage Rubrics
+            </a>
+            <a href="{% url 'export_applications_csv' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-download"></i> Export CSV
+            </a>
         </div>
     </div>
 </div>

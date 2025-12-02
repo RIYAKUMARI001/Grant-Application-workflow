@@ -3,13 +3,103 @@
 {% block title %}Applicant Dashboard{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-12">
-        <h2 class="mb-4">Applicant Dashboard</h2>
-        <div class="alert alert-success">
-            <h4>Welcome, {{ user.username }}!</h4>
-            <p>You are logged in as an <strong>Applicant</strong>.</p>
-            <p class="mb-0">This dashboard will be implemented in Phase 2.</p>
+<div class="container mt-4">
+    <h2 class="mb-4">Applicant Dashboard</h2>
+    
+    <div class="alert alert-info">
+        <h4>Welcome, {{ user.username }}!</h4>
+        <p>You are logged in as an <strong>Applicant</strong>.</p>
+    </div>
+    
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Total Applications</h5>
+                    <p class="card-text display-4">{{ total_apps }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Submitted</h5>
+                    <p class="card-text display-4">{{ submitted_apps }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">In Review</h5>
+                    <p class="card-text display-4">{{ in_review_apps }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Decided</h5>
+                    <p class="card-text display-4">{{ decided_apps }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Submit New Application Button -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <a href="{% url 'submit_application' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-plus"></i> Submit New Application
+            </a>
+        </div>
+    </div>
+    
+    <!-- My Applications Table -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>My Applications</h4>
+                </div>
+                <div class="card-body">
+                    {% if applications %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for app in applications %}
+                                <tr>
+                                    <td>{{ app.title }}</td>
+                                    <td>${{ app.amount_requested }}</td>
+                                    <td>
+                                        <span class="badge bg-{% if app.status == 'submitted' %}info{% elif app.status == 'in_review' %}warning{% elif app.status == 'decided' %}success{% endif %}">
+                                            {{ app.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'view_application' app.id %}" class="btn btn-sm btn-outline-primary">
+                                            View Details
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">You haven't submitted any applications yet.</p>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
 </div>
