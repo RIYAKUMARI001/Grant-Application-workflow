@@ -21,6 +21,7 @@ urlpatterns = [
     path('admin-panel/assign/<int:app_id>/', views.assign_reviewers, name='assign_reviewers'),
     path('admin-panel/rubrics/', views.manage_rubrics, name='manage_rubrics'),
     path('admin-panel/users/', views.manage_users, name='manage_users'),
+    path('admin-panel/users/change-role/<int:user_id>/', views.change_user_role, name='change_user_role'),
     path('admin-panel/users/delete/<int:user_id>/', views.delete_user, name='delete_user'),
     
     # Phase 5: Score Aggregation & Decision URLs

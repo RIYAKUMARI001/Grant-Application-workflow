@@ -382,6 +382,33 @@ def manage_users(request):
     return render(request, 'admin_panel/manage_users.html', context)
 
 @login_required
+def change_user_role(request, user_id):
+    if not request.user.is_admin_role():
+        return HttpResponseForbidden("Access denied.")
+    
+    if request.method == 'POST':
+        try:
+            user = User.objects.get(id=user_id)
+            
+            # Prevent changing your own role
+            if user.id == request.user.id:
+                messages.error(request, 'You cannot change your own role!')
+                return redirect('manage_users')
+            
+            new_role = request.POST.get('new_role')
+            if new_role in ['applicant', 'reviewer', 'admin']:
+                old_role = user.get_role_display()
+                user.role = new_role
+                user.save()
+                messages.success(request, f'User "{user.username}" role changed from {old_role} to {user.get_role_display()}!')
+            else:
+                messages.error(request, 'Invalid role selected.')
+        except User.DoesNotExist:
+            messages.error(request, 'User not found.')
+    
+    return redirect('manage_users')
+
+@login_required
 def delete_user(request, user_id):
     if not request.user.is_admin_role():
         return HttpResponseForbidden("Access denied.")

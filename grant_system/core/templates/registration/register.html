@@ -1,12 +1,14 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - GrantFlow</title>
     <link rel="stylesheet" href="{% static 'css/auth.css' %}">
 </head>
+
 <body>
     <div class="auth-container">
         <div class="auth-card">
@@ -21,35 +23,39 @@
 
                 <div class="form-group">
                     <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
-                    <input type="text" name="username" class="form-input" id="{{ form.username.id_for_label }}" placeholder="Choose a username" value="{{ form.username.value|default:'' }}" required>
+                    <input type="text" name="username" class="form-input" id="{{ form.username.id_for_label }}"
+                        placeholder="Choose a username" value="{{ form.username.value|default:'' }}" required>
                     {% if form.username.errors %}
-                        <div class="form-error">{{ form.username.errors.0 }}</div>
+                    <div class="form-error">{{ form.username.errors.0 }}</div>
                     {% endif %}
                 </div>
 
                 <div class="form-group">
                     <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
-                    <input type="email" name="email" class="form-input" id="{{ form.email.id_for_label }}" placeholder="your@email.com" value="{{ form.email.value|default:'' }}" required>
+                    <input type="email" name="email" class="form-input" id="{{ form.email.id_for_label }}"
+                        placeholder="your@email.com" value="{{ form.email.value|default:'' }}" required>
                     {% if form.email.errors %}
-                        <div class="form-error">{{ form.email.errors.0 }}</div>
+                    <div class="form-error">{{ form.email.errors.0 }}</div>
                     {% endif %}
                 </div>
 
                 <div class="form-group">
                     <label for="{{ form.password1.id_for_label }}" class="form-label">Password</label>
-                    <input type="password" name="password1" class="form-input" id="{{ form.password1.id_for_label }}" placeholder="Create a strong password" required>
+                    <input type="password" name="password1" class="form-input" id="{{ form.password1.id_for_label }}"
+                        placeholder="Create a strong password" required>
                     {% if form.password1.errors %}
-                        <div class="form-error">{{ form.password1.errors.0 }}</div>
+                    <div class="form-error">{{ form.password1.errors.0 }}</div>
                     {% else %}
-                        <div class="form-help">Password must be at least 8 characters</div>
+                    <div class="form-help">Password must be at least 8 characters</div>
                     {% endif %}
                 </div>
 
                 <div class="form-group">
                     <label for="{{ form.password2.id_for_label }}" class="form-label">Confirm Password</label>
-                    <input type="password" name="password2" class="form-input" id="{{ form.password2.id_for_label }}" placeholder="Confirm your password" required>
+                    <input type="password" name="password2" class="form-input" id="{{ form.password2.id_for_label }}"
+                        placeholder="Confirm your password" required>
                     {% if form.password2.errors %}
-                        <div class="form-error">{{ form.password2.errors.0 }}</div>
+                    <div class="form-error">{{ form.password2.errors.0 }}</div>
                     {% endif %}
                 </div>
 
@@ -57,12 +63,13 @@
                     <label for="{{ form.role.id_for_label }}" class="form-label">Select Role</label>
                     <select name="role" class="form-select" id="{{ form.role.id_for_label }}" required>
                         <option value="">Choose your role...</option>
-                        <option value="applicant" {% if form.role.value == 'applicant' %}selected{% endif %}>Applicant - Submit Applications</option>
-                        <option value="reviewer" {% if form.role.value == 'reviewer' %}selected{% endif %}>Reviewer - Review Applications</option>
-                        <option value="admin" {% if form.role.value == 'admin' %}selected{% endif %}>Admin - Manage System</option>
+                        <option value="applicant" {% if form.role.value == 'applicant' %}selected{% endif %}>Applicant -
+                            Submit Applications</option>
+                        <option value="reviewer" {% if form.role.value == 'reviewer' %}selected{% endif %}>Reviewer -
+                            Review Applications</option>
                     </select>
                     {% if form.role.errors %}
-                        <div class="form-error">{{ form.role.errors.0 }}</div>
+                    <div class="form-error">{{ form.role.errors.0 }}</div>
                     {% endif %}
                 </div>
 
@@ -79,4 +86,5 @@
         </div>
     </div>
 </body>
+
 </html>
