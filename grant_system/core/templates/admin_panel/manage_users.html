@@ -1,75 +1,166 @@
-{% extends 'base.html' %}
-
-{% block title %}Manage Users{% endblock %}
-
-{% block content %}
-<div class="container mt-4">
-    <h2 class="mb-4">Manage Users</h2>
-    
-    <!-- Statistics -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title">Total Users</h5>
-                    <h2 class="text-primary">{{ users.count }}</h2>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title">Applicants</h5>
-                    <h2 class="text-info">{{ applicants_count }}</h2>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title">Reviewers</h5>
-                    <h2 class="text-success">{{ reviewers_count }}</h2>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5 class="card-title">Admins</h5>
-                    <h2 class="text-warning">{{ admins_count }}</h2>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Duplicate Email Warning -->
-    {% if duplicate_emails %}
-    <div class="alert alert-danger mb-4">
-        <h5><i class="fas fa-exclamation-triangle"></i> Duplicate Emails Detected!</h5>
-        <p>The following emails are used by multiple accounts:</p>
-        <ul>
-            {% for dup in duplicate_emails %}
-            <li><strong>{{ dup.email }}</strong> ({{ dup.count }} accounts)</li>
-            {% endfor %}
-        </ul>
-        <p class="mb-0">
-            <small>Please delete duplicate accounts before running the email uniqueness migration.</small>
-        </p>
-    </div>
-    {% endif %}
-    
-    <!-- Users Table -->
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">All Users</h4>
-            <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Back to Dashboard
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Users - GrantFlow</title>
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="top-navbar">
+        <div class="navbar-container">
+            <a href="{% url 'home' %}" class="navbar-brand">
+                <div class="logo-icon">G</div>
+                GrantFlow
             </a>
+            <div class="navbar-actions">
+                <div class="user-menu">
+                    <div class="user-avatar">{{ user.username|slice:":1"|upper }}</div>
+                    <span>{{ user.username }}</span>
+                </div>
+                <a href="{% url 'logout' %}" class="btn-logout">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                        <polyline points="16 17 21 12 16 7"/>
+                        <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                    Logout
+                </a>
+            </div>
         </div>
-        <div class="card-body">
+    </nav>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <div class="title-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                </div>
+                Manage Users
+            </h1>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon purple">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                    </div>
+                    <span class="stat-label">Total Users</span>
+                </div>
+                <div class="stat-number">{{ users.count }}</div>
+                <div class="stat-subtitle">registered accounts</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon cyan">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </div>
+                    <span class="stat-label">Applicants</span>
+                </div>
+                <div class="stat-number">{{ applicants_count }}</div>
+                <div class="stat-subtitle">applications</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon green">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                    </div>
+                    <span class="stat-label">Reviewers</span>
+                </div>
+                <div class="stat-number">{{ reviewers_count }}</div>
+                <div class="stat-subtitle">reviewers</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon orange">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M12 1v6m0 6v6m5.2-13.2l-4.2 4.2m0 6l4.2 4.2M23 12h-6m-6 0H1m18.2 5.2l-4.2-4.2m0-6l4.2-4.2"/>
+                        </svg>
+                    </div>
+                    <span class="stat-label">Admins</span>
+                </div>
+                <div class="stat-number">{{ admins_count }}</div>
+                <div class="stat-subtitle">administrators</div>
+            </div>
+        </div>
+
+        <!-- Duplicate Email Warning -->
+        {% if duplicate_emails %}
+        <div class="alert-box">
+            <div class="alert-header">
+                <div class="alert-icon danger">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                </div>
+                <h3 class="alert-title">Duplicate Emails Detected!</h3>
+            </div>
+            <div class="alert-content">
+                <p>The following emails are used by multiple accounts. This may cause issues with login and notifications.</p>
+                <ul>
+                    {% for dup in duplicate_emails %}
+                    <li><strong>{{ dup.email }}</strong> - {{ dup.count }} accounts</li>
+                    {% endfor %}
+                </ul>
+                <p style="margin-top: 1rem;">
+                    <strong>Action Required:</strong> Please resolve these conflicts before running the monthly report.
+                </p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Users Table -->
+        <div class="data-card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    All Users
+                </h2>
+                <a href="{% url 'admin_dashboard' %}" class="btn-back">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 18 9 12 15 6"/>
+                    </svg>
+                    Back to Dashboard
+                </a>
+            </div>
             {% if users %}
-            <div class="table-responsive">
-                <table class="table table-striped table-hover">
+            <div class="table-container">
+                <table class="data-table">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -83,12 +174,12 @@
                     </thead>
                     <tbody>
                         {% for user in users %}
-                        <tr {% if user.id == request.user.id %}class="table-info"{% endif %}>
-                            <td>{{ user.id }}</td>
+                        <tr {% if user.id == request.user.id %}class="highlight"{% endif %}>
+                            <td><strong>#{{ user.id }}</strong></td>
                             <td>
                                 {{ user.username }}
                                 {% if user.id == request.user.id %}
-                                    <span class="badge bg-info">You</span>
+                                    <span class="badge you">You</span>
                                 {% endif %}
                             </td>
                             <td>
@@ -96,108 +187,118 @@
                                 {% if duplicate_emails %}
                                     {% for dup in duplicate_emails %}
                                         {% if dup.email == user.email %}
-                                            <span class="badge bg-danger">Duplicate</span>
+                                            <span class="badge duplicate">Duplicate</span>
                                         {% endif %}
                                     {% endfor %}
                                 {% endif %}
                             </td>
                             <td>
                                 {% if user.role == 'applicant' %}
-                                    <span class="badge bg-info">Applicant</span>
+                                    <span class="badge applicant">👤 Applicant</span>
                                 {% elif user.role == 'reviewer' %}
-                                    <span class="badge bg-success">Reviewer</span>
+                                    <span class="badge reviewer">✓ Reviewer</span>
                                 {% elif user.role == 'admin' %}
-                                    <span class="badge bg-warning">Admin</span>
+                                    <span class="badge admin">⚙ Admin</span>
                                 {% endif %}
                             </td>
                             <td>{{ user.date_joined|date:"M d, Y" }}</td>
                             <td>
                                 {% if user.last_login %}
-                                    {{ user.last_login|date:"M d, Y H:i" }}
+                                    {{ user.last_login|timesince }} ago
                                 {% else %}
-                                    <span class="text-muted">Never</span>
+                                    <span style="color: #a0aec0;">Never</span>
                                 {% endif %}
                             </td>
                             <td>
                                 {% if user.id != request.user.id %}
-                                    <button class="btn btn-sm btn-danger" data-bs-toggle="modal" 
-                                            data-bs-target="#deleteModal{{ user.id }}">
-                                        <i class="fas fa-trash"></i> Delete
+                                    <button class="btn-action danger" onclick="document.getElementById('deleteModal{{ user.id }}').style.display='block'">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="3 6 5 6 21 6"/>
+                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                        </svg>
                                     </button>
                                 {% else %}
-                                    <span class="text-muted">-</span>
+                                    <span style="color: #a0aec0;">-</span>
                                 {% endif %}
                             </td>
                         </tr>
-                        
-                        <!-- Delete Confirmation Modal -->
-                        <div class="modal fade" id="deleteModal{{ user.id }}" tabindex="-1">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Delete User</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <form method="post" action="{% url 'delete_user' user.id %}">
-                                        {% csrf_token %}
-                                        <div class="modal-body">
-                                            <p>Are you sure you want to delete this user?</p>
-                                            <div class="alert alert-warning">
-                                                <strong>Username:</strong> {{ user.username }}<br>
-                                                <strong>Email:</strong> {{ user.email }}<br>
-                                                <strong>Role:</strong> {{ user.get_role_display }}
-                                            </div>
-                                            <p class="text-danger">
-                                                <i class="fas fa-exclamation-triangle"></i> 
-                                                <strong>Warning:</strong> This will also delete:
-                                            </p>
-                                            <ul>
-                                                {% if user.role == 'applicant' %}
-                                                    <li>All applications submitted by this user</li>
-                                                    <li>All reviews and scores for those applications</li>
-                                                {% elif user.role == 'reviewer' %}
-                                                    <li>All reviews assigned to this user</li>
-                                                    <li>All scores given by this user</li>
-                                                {% endif %}
-                                            </ul>
-                                            <p class="text-danger">This action cannot be undone!</p>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                            <button type="submit" class="btn btn-danger">
-                                                <i class="fas fa-trash"></i> Delete User
-                                            </button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
             {% else %}
-            <p class="text-muted">No users found.</p>
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                    </svg>
+                </div>
+                <h3>No Users Found</h3>
+                <p>There are no users in the system.</p>
+            </div>
             {% endif %}
         </div>
-    </div>
-    
-    <!-- Help Section -->
-    <div class="card mt-4">
-        <div class="card-header">
-            <h5><i class="fas fa-info-circle"></i> How to Fix Duplicate Emails</h5>
+
+        <!-- Delete Modals -->
+        {% for user in users %}
+        <div id="deleteModal{{ user.id }}" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
+            <div style="background:white; border-radius:16px; max-width:500px; width:90%; padding:2rem; box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+                <h3 style="margin-bottom:1rem; color:#1a202c;">Delete User</h3>
+                <form method="post" action="{% url 'delete_user' user.id %}">
+                    {% csrf_token %}
+                    <p>Are you sure you want to delete this user?</p>
+                    <div style="background:#fffaf0; border-left:4px solid #f6ad55; padding:1rem; margin:1rem 0; border-radius:8px;">
+                        <strong>Username:</strong> {{ user.username }}<br>
+                        <strong>Email:</strong> {{ user.email }}<br>
+                        <strong>Role:</strong> {{ user.get_role_display }}
+                    </div>
+                    <p style="color:#e53e3e; font-weight:600;">⚠️ Warning: This will also delete:</p>
+                    <ul style="color:#718096;">
+                        {% if user.role == 'applicant' %}
+                            <li>All applications submitted by this user</li>
+                            <li>All reviews and scores for those applications</li>
+                        {% elif user.role == 'reviewer' %}
+                            <li>All reviews assigned to this user</li>
+                            <li>All scores given by this user</li>
+                        {% endif %}
+                    </ul>
+                    <p style="color:#e53e3e;">This action cannot be undone!</p>
+                    <div style="display:flex; gap:1rem; margin-top:1.5rem;">
+                        <button type="button" onclick="document.getElementById('deleteModal{{ user.id }}').style.display='none'" style="flex:1; padding:0.8rem; border:2px solid #e2e8f0; background:white; border-radius:8px; font-weight:600; cursor:pointer;">Cancel</button>
+                        <button type="submit" style="flex:1; padding:0.8rem; background:#e53e3e; color:white; border:none; border-radius:8px; font-weight:600; cursor:pointer;">Delete User</button>
+                    </div>
+                </form>
+            </div>
         </div>
-        <div class="card-body">
-            <ol>
-                <li>Identify users with duplicate emails (marked with red "Duplicate" badge)</li>
-                <li>Decide which account to keep for each email</li>
-                <li>Delete the duplicate accounts using the Delete button</li>
-                <li>Once all duplicates are removed, run migration:
-                    <pre class="bg-light p-2 mt-2"><code>python manage.py makemigrations
-python manage.py migrate</code></pre>
-                </li>
-            </ol>
+        {% endfor %}
+
+        <!-- Help Section -->
+        <div class="form-card">
+            <div class="alert-header">
+                <div class="alert-icon" style="background:#e3f2fd; color:#4299e1;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="16" x2="12" y2="12"/>
+                        <line x1="12" y1="8" x2="12.01" y2="8"/>
+                    </svg>
+                </div>
+                <h3 class="alert-title">How to Fix Duplicate Emails</h3>
+            </div>
+            <div class="alert-content" style="margin-top:1rem;">
+                <ol style="line-height:1.8; color:#4a5568;">
+                    <li><strong>Identify users</strong> with duplicate emails (check the warning banner above or look for the "DUP" badge)</li>
+                    <li><strong>Decide which account</strong> to keep for each email - usually the most recent or most active one</li>
+                    <li><strong>Delete duplicate accounts</strong> using the trash icon in the actions column</li>
+                    <li><strong>Run migration</strong> command for the project once all duplicates are resolved:
+                        <div style="background:#1a202c; color:#48bb78; padding:1rem; border-radius:8px; margin-top:0.5rem; font-family:monospace; font-size:0.9rem;">
+                            $ python manage.py makemigrations<br>
+                            $ python manage.py migrate
+                        </div>
+                    </li>
+                </ol>
+            </div>
         </div>
     </div>
-</div>
-{% endblock %}
+</body>
+</html>

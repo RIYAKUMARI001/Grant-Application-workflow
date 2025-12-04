@@ -1,132 +1,245 @@
-{% extends 'base.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - GrantFlow</title>
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="top-navbar">
+        <div class="navbar-container">
+            <a href="{% url 'home' %}" class="navbar-brand">
+                <div class="logo-icon">G</div>
+                GrantFlow
+            </a>
+            <div class="navbar-actions">
+                <div class="user-menu">
+                    <div class="user-avatar">{{ user.username|slice:":1"|upper }}</div>
+                    <span>{{ user.username }} (Admin)</span>
+                </div>
+                <a href="{% url 'logout' %}" class="btn-logout">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                        <polyline points="16 17 21 12 16 7"/>
+                        <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                    Logout
+                </a>
+            </div>
+        </div>
+    </nav>
 
-{% block title %}Admin Dashboard{% endblock %}
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <div class="title-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M12 1v6m0 6v6m5.2-13.2l-4.2 4.2m0 6l4.2 4.2M23 12h-6m-6 0H1m18.2 5.2l-4.2-4.2m0-6l4.2-4.2"/>
+                    </svg>
+                </div>
+                Admin Dashboard
+            </h1>
+        </div>
 
-{% block content %}
-<div class="container mt-4">
-    <h2 class="mb-4">Admin Dashboard</h2>
-    
-    <div class="alert alert-warning">
-        <h4>Welcome, {{ user.username }}!</h4>
-        <p>You are logged in as an <strong>Admin</strong>.</p>
-    </div>
-    
-    <!-- System Statistics -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card text-white bg-primary mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Total Applications</h5>
-                    <p class="card-text display-4">{{ total_applications }}</p>
+        <!-- Welcome Banner -->
+        <div class="alert-box warning">
+            <div class="alert-header">
+                <div class="alert-icon warning">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                    </svg>
                 </div>
+                <h3 class="alert-title">Welcome, {{ user.username }}!</h3>
+            </div>
+            <div class="alert-content">
+                You are logged in as an <strong>Admin</strong>. You have full access to manage applications, users, and system settings.
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-info mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Pending Assignment</h5>
-                    <p class="card-text display-4">{{ pending_assignment }}</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-warning mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">In Review</h5>
-                    <p class="card-text display-4">{{ in_review }}</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-success mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Decided</h5>
-                    <p class="card-text display-4">{{ decided }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- All Applications Table -->
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">
-                    <h4>All Applications</h4>
-                </div>
-                <div class="card-body">
-                    {% if applications %}
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Applicant</th>
-                                    <th>Title</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for app in applications %}
-                                <tr>
-                                    <td>{{ app.id }}</td>
-                                    <td>{{ app.applicant.email }}</td>
-                                    <td>{{ app.title }}</td>
-                                    <td>
-                                        <span class="badge bg-{% if app.status == 'submitted' %}info{% elif app.status == 'in_review' %}warning{% elif app.status == 'decided' %}success{% endif %}">
-                                            {{ app.get_status_display }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        {% if app.status == 'submitted' %}
-                                            <a href="{% url 'assign_reviewers' app.id %}" class="btn btn-sm btn-primary">
-                                                Assign Reviewers
-                                            </a>
-                                        {% elif app.status == 'in_review' %}
-                                            <a href="{% url 'view_scores' app.id %}" class="btn btn-sm btn-info">
-                                                View Scores
-                                            </a>
-                                        {% elif app.status == 'decided' %}
-                                            <a href="{% url 'view_scores' app.id %}" class="btn btn-sm btn-success">
-                                                View Results
-                                            </a>
-                                            {% if app.final_decision is None %}
-                                                <a href="{% url 'finalize_decision' app.id 'approve' %}" class="btn btn-sm btn-success">
-                                                    Approve
-                                                </a>
-                                                <a href="{% url 'finalize_decision' app.id 'reject' %}" class="btn btn-sm btn-danger">
-                                                    Reject
-                                                </a>
-                                            {% endif %}
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+
+        <!-- System Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon purple">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
                     </div>
-                    {% else %}
-                    <p class="text-muted">No applications found.</p>
-                    {% endif %}
+                    <span class="stat-label">Total Applications</span>
                 </div>
+                <div class="stat-number">{{ total_applications }}</div>
+                <div class="stat-subtitle">all submissions</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon cyan">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                    </div>
+                    <span class="stat-label">Pending Assignment</span>
+                </div>
+                <div class="stat-number">{{ pending_assignment }}</div>
+                <div class="stat-subtitle">awaiting reviewers</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon orange">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 11l3 3L22 4"/>
+                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                        </svg>
+                    </div>
+                    <span class="stat-label">In Review</span>
+                </div>
+                <div class="stat-number">{{ in_review }}</div>
+                <div class="stat-subtitle">being evaluated</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon green">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </div>
+                    <span class="stat-label">Decided</span>
+                </div>
+                <div class="stat-number">{{ decided }}</div>
+                <div class="stat-subtitle">completed</div>
             </div>
         </div>
-    </div>
-    
-    <!-- Management Buttons -->
-    <div class="row">
-        <div class="col-md-12">
-            <a href="{% url 'manage_rubrics' %}" class="btn btn-secondary btn-lg me-2 mb-2">
-                <i class="fas fa-cog"></i> Manage Rubrics
+
+        <!-- All Applications Table -->
+        <div class="data-card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                    All Applications
+                </h2>
+            </div>
+            {% if applications %}
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Applicant</th>
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in applications %}
+                        <tr>
+                            <td><strong>#{{ app.id }}</strong></td>
+                            <td>{{ app.applicant.email }}</td>
+                            <td>{{ app.title }}</td>
+                            <td>
+                                {% if app.status == 'submitted' %}
+                                    <span class="badge" style="background:#e3f2fd; color:#4299e1;">Submitted</span>
+                                {% elif app.status == 'in_review' %}
+                                    <span class="badge" style="background:#fef5e7; color:#f6ad55;">In Review</span>
+                                {% elif app.status == 'decided' %}
+                                    <span class="badge" style="background:#e6fffa; color:#48bb78;">Decided</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if app.status == 'submitted' %}
+                                    <a href="{% url 'assign_reviewers' app.id %}" class="btn-action primary">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                            <circle cx="9" cy="7" r="4"/>
+                                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                        </svg>
+                                        Assign Reviewers
+                                    </a>
+                                {% elif app.status == 'in_review' %}
+                                    <a href="{% url 'view_scores' app.id %}" class="btn-action info">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                            <circle cx="12" cy="12" r="3"/>
+                                        </svg>
+                                        View Scores
+                                    </a>
+                                {% elif app.status == 'decided' %}
+                                    <a href="{% url 'view_scores' app.id %}" class="btn-action success">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="20 6 9 17 4 12"/>
+                                        </svg>
+                                        View Results
+                                    </a>
+                                    {% if app.final_decision is None %}
+                                        <a href="{% url 'finalize_decision' app.id 'approve' %}" class="btn-action success" style="margin-left:0.5rem;">
+                                            Approve
+                                        </a>
+                                        <a href="{% url 'finalize_decision' app.id 'reject' %}" class="btn-action danger" style="margin-left:0.5rem;">
+                                            Reject
+                                        </a>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                </div>
+                <h3>No Applications Found</h3>
+                <p>There are no applications in the system yet.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Management Buttons -->
+        <div class="management-buttons">
+            <a href="{% url 'manage_rubrics' %}" class="btn-manage rubrics">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M12 1v6m0 6v6m5.2-13.2l-4.2 4.2m0 6l4.2 4.2M23 12h-6m-6 0H1m18.2 5.2l-4.2-4.2m0-6l4.2-4.2"/>
+                </svg>
+                Manage Rubrics
             </a>
-            <a href="{% url 'manage_users' %}" class="btn btn-info btn-lg me-2 mb-2">
-                <i class="fas fa-users"></i> Manage Users
+            <a href="{% url 'manage_users' %}" class="btn-manage users">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                Manage Users
             </a>
-            <a href="{% url 'export_applications_csv' %}" class="btn btn-primary btn-lg mb-2">
-                <i class="fas fa-download"></i> Export CSV
+            <a href="{% url 'export_applications_csv' %}" class="btn-manage export">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Export CSV
             </a>
         </div>
     </div>
-</div>
-{% endblock %}
+</body>
+</html>

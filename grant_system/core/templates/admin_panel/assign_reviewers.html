@@ -2,56 +2,257 @@
 
 {% block title %}Assign Reviewers{% endblock %}
 
+{% block extra_css %}
+<style>
+    .page-header {
+        margin-bottom: 2rem;
+    }
+    .page-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #1a202c;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    .title-icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+    .card {
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: none;
+        margin-bottom: 1.5rem;
+    }
+    .card-header {
+        background: white;
+        border-bottom: 1px solid #f0f0f0;
+        font-weight: 600;
+        padding: 1.2rem 1.5rem;
+    }
+    .card-body {
+        padding: 1.5rem;
+    }
+    .app-detail-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    .detail-item {
+        padding: 1rem;
+        background: #f7fafc;
+        border-radius: 8px;
+    }
+    .detail-label {
+        font-size: 0.85rem;
+        color: #a0aec0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    .detail-value {
+        font-size: 1rem;
+        color: #2d3748;
+        font-weight: 500;
+    }
+    .detail-value.large {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #667eea;
+    }
+    .reviewer-item {
+        padding: 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+    .reviewer-item:hover {
+        border-color: #667eea;
+        background: #f0f4ff;
+    }
+    .reviewer-item.selected {
+        border-color: #667eea;
+        background: #e3f2fd;
+    }
+    .reviewer-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .reviewer-avatar {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+        font-size: 1.2rem;
+    }
+    .reviewer-details h5 {
+        margin: 0 0 0.3rem 0;
+        font-weight: 600;
+        color: #1a202c;
+    }
+    .reviewer-details p {
+        margin: 0;
+        color: #718096;
+        font-size: 0.9rem;
+    }
+    .form-check-input {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+    }
+    .btn {
+        border-radius: 8px;
+        font-weight: 600;
+        padding: 0.8rem 2rem;
+    }
+    .badge-assigned {
+        background: #e6fffa;
+        color: #48bb78;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">Assign Reviewers</h2>
+    <div class="page-header">
+        <h2 class="page-title">
+            <div class="title-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+            </div>
+            Assign Reviewers
+        </h2>
+    </div>
     
-    <!-- Application Details -->
-    <div class="card mb-4">
+    <!-- Application Summary -->
+    <div class="card">
         <div class="card-header">
-            <h4>Application Details</h4>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 0.5rem;">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+            </svg>
+            Application Summary
         </div>
         <div class="card-body">
-            <p><strong>Title:</strong> {{ application.title }}</p>
-            <p><strong>Applicant:</strong> {{ application.applicant.email }}</p>
-            <p><strong>Amount Requested:</strong> ${{ application.amount_requested }}</p>
-            <p><strong>Description:</strong></p>
-            <p>{{ application.description }}</p>
+            <div class="app-detail-grid">
+                <div class="detail-item">
+                    <div class="detail-label">Project Title</div>
+                    <div class="detail-value">{{ application.title }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Applicant</div>
+                    <div class="detail-value">{{ application.applicant.email }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Amount Requested</div>
+                    <div class="detail-value large">${{ application.amount_requested|floatformat:2 }}</div>
+                </div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Description</div>
+                <div class="detail-value">{{ application.description }}</div>
+            </div>
         </div>
     </div>
     
-    <!-- Assign Reviewers Form -->
+    <!-- Select Reviewers -->
     <div class="card">
         <div class="card-header">
-            <h4>Available Reviewers</h4>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h4 style="margin: 0;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 0.5rem;">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    Select Reviewers
+                </h4>
+                <span style="color: #a0aec0; font-size: 0.9rem;">Choose one or more reviewers to evaluate this application</span>
+            </div>
         </div>
         <div class="card-body">
             {% if reviewers %}
             <form method="post">
                 {% csrf_token %}
                 
-                <div class="mb-3">
+                <div class="mb-4">
                     {% for reviewer in reviewers %}
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" 
-                               id="reviewer_{{ reviewer.id }}" 
-                               name="reviewers" 
-                               value="{{ reviewer.id }}"
-                               {% if reviewer.id in assigned_reviewers %}checked{% endif %}>
-                        <label class="form-check-label" for="reviewer_{{ reviewer.id }}">
-                            {{ reviewer.username }} ({{ reviewer.email }})
-                        </label>
-                    </div>
+                    <label for="reviewer_{{ reviewer.id }}" class="reviewer-item {% if reviewer.id in assigned_reviewers %}selected{% endif %}">
+                        <div class="reviewer-info">
+                            <input class="form-check-input" type="checkbox" 
+                                   id="reviewer_{{ reviewer.id }}" 
+                                   name="reviewers" 
+                                   value="{{ reviewer.id }}"
+                                   {% if reviewer.id in assigned_reviewers %}checked{% endif %}
+                                   onchange="this.parentElement.parentElement.classList.toggle('selected', this.checked)">
+                            <div class="reviewer-avatar">{{ reviewer.username|slice:":1"|upper }}</div>
+                            <div class="reviewer-details">
+                                <h5>{{ reviewer.username }}</h5>
+                                <p>{{ reviewer.email }}</p>
+                            </div>
+                            {% if reviewer.id in assigned_reviewers %}
+                            <span class="badge-assigned" style="margin-left: auto;">Already Assigned</span>
+                            {% endif %}
+                        </div>
+                    </label>
                     {% endfor %}
                 </div>
                 
-                <button type="submit" class="btn btn-primary btn-lg">Assign Selected</button>
-                <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary btn-lg">Cancel</a>
+                <div style="display: flex; gap: 1rem;">
+                    <button type="submit" class="btn btn-primary">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 0.5rem;">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        Assign Selected
+                    </button>
+                    <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Cancel</a>
+                </div>
             </form>
             {% else %}
-            <p class="text-muted">No reviewers available.</p>
+            <div style="text-align: center; padding: 3rem;">
+                <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#e2e8f0" stroke-width="1.5" style="margin-bottom: 1rem;">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                </svg>
+                <p style="color: #a0aec0;">No reviewers available in the system.</p>
+            </div>
             {% endif %}
         </div>
     </div>
 </div>
+
+<script>
+// Add visual feedback when selecting reviewers
+document.querySelectorAll('.reviewer-item input[type="checkbox"]').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+        this.closest('.reviewer-item').classList.toggle('selected', this.checked);
+    });
+});
+</script>
 {% endblock %}
