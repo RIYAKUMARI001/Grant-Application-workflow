@@ -2,6 +2,35 @@
 
 {% block title %}Manage Rubrics{% endblock %}
 
+{% block extra_css %}
+<style>
+    .card {
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border: none;
+    }
+    .card-header {
+        background: white;
+        border-bottom: 1px solid #f0f0f0;
+        font-weight: 600;
+    }
+    .table {
+        margin-bottom: 0;
+    }
+    .btn {
+        border-radius: 8px;
+    }
+    .badge {
+        border-radius: 20px;
+        padding: 0.4rem 0.8rem;
+    }
+    .alert {
+        border-radius: 12px;
+        border-left: 4px solid;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
     <h2 class="mb-4">Manage Rubrics</h2>

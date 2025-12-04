@@ -2,10 +2,150 @@
 
 {% block title %}View Scores - {{ application.title }}{% endblock %}
 
+{% block extra_css %}
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .page-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #1a202c;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    .title-icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+
+    .card {
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        border: none;
+        margin-bottom: 1.5rem;
+    }
+
+    .card-header {
+        background: white;
+        border-bottom: 1px solid #f0f0f0;
+        font-weight: 600;
+        padding: 1.2rem 1.5rem;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .badge {
+        border-radius: 20px;
+        padding: 0.4rem 0.8rem;
+        font-weight: 600;
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table thead {
+        background: #f7fafc;
+    }
+
+    .table th {
+        border-bottom: 2px solid #e2e8f0;
+        color: #718096;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+    }
+
+    .table td {
+        vertical-align: middle;
+        padding: 1rem;
+    }
+
+    .alert {
+        border-radius: 12px;
+        border-left: 4px solid;
+    }
+
+    .alert-info {
+        background: linear-gradient(to right, #e3f2fd 0%, white 100%);
+        border-left-color: #4299e1;
+    }
+
+    .alert-warning {
+        background: linear-gradient(to right, #fffaf0 0%, white 100%);
+        border-left-color: #f6ad55;
+    }
+
+    .btn {
+        border-radius: 8px;
+        font-weight: 600;
+        padding: 0.6rem 1.5rem;
+    }
+
+    .btn-lg {
+        padding: 0.8rem 2rem;
+    }
+
+    .reviewer-card {
+        border-left: 4px solid #667eea;
+    }
+
+    .score-badge {
+        font-size: 1.2rem;
+        padding: 0.5rem 1rem;
+    }
+
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .btn-back:hover {
+        color: #764ba2;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
-    <h2>Scores for Application: {{ application.title }}</h2>
-    
+    <div class="page-header">
+        <h2 class="page-title">
+            <div class="title-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 11l3 3L22 4" />
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                </svg>
+            </div>
+            Application Scores: {{ application.title }}
+        </h2>
+        <a href="{% url 'admin_dashboard' %}" class="btn-back">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6" />
+            </svg>
+            Back to List
+        </a>
+    </div>
+
     <div class="card mb-4">
         <div class="card-header">
             <h4>Application Details</h4>
@@ -13,65 +153,101 @@
         <div class="card-body">
             <p><strong>Applicant:</strong> {{ application.applicant.username }}</p>
             <p><strong>Amount Requested:</strong> ${{ application.amount_requested }}</p>
-            <p><strong>Status:</strong> 
-                <span class="badge bg-{% if application.status == 'submitted' %}info{% elif application.status == 'in_review' %}warning{% elif application.status == 'decided' %}success{% endif %}">
+            <p><strong>Status:</strong>
+                <span
+                    class="badge bg-{% if application.status == 'submitted' %}info{% elif application.status == 'in_review' %}warning{% elif application.status == 'decided' %}success{% endif %}">
                     {{ application.get_status_display }}
                 </span>
             </p>
             {% if application.final_decision is not None %}
-                <p><strong>Final Decision:</strong> 
-                    <span class="badge bg-{% if application.final_decision %}success{% else %}danger{% endif %}">
-                        {% if application.final_decision %}Approved{% else %}Rejected{% endif %}
-                    </span>
-                </p>
+            <p><strong>Final Decision:</strong>
+                <span class="badge bg-{% if application.final_decision %}success{% else %}danger{% endif %}">
+                    {% if application.final_decision %}Approved{% else %}Rejected{% endif %}
+                </span>
+            </p>
             {% endif %}
         </div>
     </div>
 
     {% for data in review_data %}
-    <div class="card mb-4">
+    <div class="card reviewer-card">
         <div class="card-header">
-            <h5>Reviewer: {{ data.reviewer }}</h5>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h5 style="margin: 0;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        style="display: inline; vertical-align: middle; margin-right: 0.5rem;">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                    </svg>
+                    {{ data.reviewer }}
+                </h5>
+                <span class="badge bg-primary score-badge">Avg: {{ data.average|floatformat:2 }}</span>
+            </div>
         </div>
         <div class="card-body">
-            <table class="table table-striped">
+            <table class="table table-hover">
                 <thead>
                     <tr>
                         <th>Rubric</th>
-                        <th>Score</th>
-                        <th>Max Score</th>
+                        <th style="text-align: center;">Score</th>
+                        <th style="text-align: center;">Max Score</th>
                         <th>Comments</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for score in data.scores %}
                     <tr>
-                        <td>{{ score.rubric.name }}</td>
-                        <td>{{ score.score }}</td>
-                        <td>{{ score.rubric.max_score }}</td>
-                        <td>{{ score.comments }}</td>
+                        <td><strong>{{ score.rubric.name }}</strong></td>
+                        <td style="text-align: center;">
+                            <span
+                                class="badge {% if score.score >= score.rubric.max_score|floatformat:0|add:'-2' %}bg-success{% elif score.score >= score.rubric.max_score|floatformat:0|add:'-5' %}bg-warning{% else %}bg-danger{% endif %}">
+                                {{ score.score }}
+                            </span>
+                        </td>
+                        <td style="text-align: center;">{{ score.rubric.max_score }}</td>
+                        <td>{{ score.comments|default:"No comments" }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-            <div class="alert alert-info">
-                <strong>Average Score:</strong> {{ data.average|floatformat:2 }}
-            </div>
         </div>
     </div>
     {% endfor %}
 
-    <div class="card mb-4">
+    <div class="card">
         <div class="card-header">
-            <h4>Overall Results</h4>
+            <h4>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    style="display: inline; vertical-align: middle; margin-right: 0.5rem;">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                </svg>
+                Overall Results
+            </h4>
         </div>
         <div class="card-body">
-            <p><strong>Overall Average Score:</strong> {{ overall_average|floatformat:2 }}</p>
-            <p><strong>Variance:</strong> {{ variance|floatformat:2 }} points</p>
-            {% if has_high_variance %}
-                <div class="alert alert-warning">
-                    <strong>⚠️ Variance Alert:</strong> High variance (>3 points) between reviewers. Consider reviewing this application carefully.
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 1rem;">
+                <div>
+                    <p style="color: #a0aec0; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">
+                        Overall Average Score</p>
+                    <p style="font-size: 2rem; font-weight: 700; color: #667eea; margin: 0;">{{ overall_average|floatformat:2 }}</p>
                 </div>
+                <div>
+                    <p
+                        style="color: #a0aec0; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem;">
+                        Variance</p>
+                    {% if has_high_variance %}
+                    <p style="font-size: 2rem; font-weight: 700; color: #f6ad55; margin: 0;">{{ variance|floatformat:2 }}</p>
+                    {% else %}
+                    <p style="font-size: 2rem; font-weight: 700; color: #48bb78; margin: 0;">{{ variance|floatformat:2 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% if has_high_variance %}
+            <div class="alert alert-warning">
+                <strong>⚠️ Variance Alert:</strong> High variance (>3 points) between reviewers. Consider reviewing this
+                application carefully.
+            </div>
             {% endif %}
         </div>
     </div>
@@ -83,14 +259,16 @@
         </div>
         <div class="card-body">
             <p>Make a final decision for this application:</p>
-            <a href="{% url 'finalize_decision' application.id 'approve' %}" class="btn btn-success btn-lg me-2">Approve</a>
+            <a href="{% url 'finalize_decision' application.id 'approve' %}"
+                class="btn btn-success btn-lg me-2">Approve</a>
             <a href="{% url 'finalize_decision' application.id 'reject' %}" class="btn btn-danger btn-lg">Reject</a>
         </div>
     </div>
     {% else %}
     <div class="alert alert-info">
         <h4>Decision Already Made</h4>
-        <p>This application has already been {% if application.final_decision %}approved{% else %}rejected{% endif %}.</p>
+        <p>This application has already been {% if application.final_decision %}approved{% else %}rejected{% endif %}.
+        </p>
     </div>
     {% endif %}
 </div>
