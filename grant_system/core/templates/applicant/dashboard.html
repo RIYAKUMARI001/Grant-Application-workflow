@@ -1,106 +1,175 @@
-{% extends 'base.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - GrantFlow</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="top-navbar">
+        <div class="navbar-container">
+            <a href="{% url 'home' %}" class="navbar-brand">
+                <div class="logo-icon">G</div>
+                GrantFlow
+            </a>
+            <div class="navbar-actions">
+                <div class="user-menu">
+                    <div class="user-avatar">{{ user.username|slice:":1"|upper }}</div>
+                    <span>{{ user.username }}</span>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-{% block title %}Applicant Dashboard{% endblock %}
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <div class="welcome-content">
+                <h1>Welcome back, {{ user.username }}!</h1>
+                <p>We've missed you! You have <strong>{{ in_review_apps }} active application{% if in_review_apps != 1 %}s{% endif %}</strong> pending review. Need help with your next step? Check out our <a href="#">updated guidelines</a>.</p>
+            </div>
+            <div class="welcome-icon">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                </svg>
+            </div>
+        </div>
 
-{% block content %}
-<div class="container mt-4">
-    <h2 class="mb-4">Applicant Dashboard</h2>
-    
-    <div class="alert alert-info">
-        <h4>Welcome, {{ user.username }}!</h4>
-        <p>You are logged in as an <strong>Applicant</strong>.</p>
-    </div>
-    
-    <!-- Statistics Cards -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card text-white bg-primary mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Total Applications</h5>
-                    <p class="card-text display-4">{{ total_apps }}</p>
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card primary">
+                <div class="stat-header">
+                    <div class="stat-icon primary">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                    </div>
+                    <span class="stat-label">All Time</span>
                 </div>
+                <div class="stat-number">{{ total_apps }}</div>
+                <div class="stat-subtitle">Total Applications</div>
+            </div>
+
+            <div class="stat-card orange">
+                <div class="stat-header">
+                    <div class="stat-icon orange">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                    </div>
+                    <span class="stat-label">Pending</span>
+                </div>
+                <div class="stat-number">{{ in_review_apps }}</div>
+                <div class="stat-subtitle">In Review</div>
+            </div>
+
+            <div class="stat-card green">
+                <div class="stat-header">
+                    <div class="stat-icon green">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                    </div>
+                    <span class="stat-label">+4 this month</span>
+                </div>
+                <div class="stat-number">{{ submitted_apps }}</div>
+                <div class="stat-subtitle">Approved Grants</div>
+            </div>
+
+            <div class="stat-card gray">
+                <div class="stat-header">
+                    <div class="stat-icon gray">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                        </svg>
+                    </div>
+                    <span class="stat-label">In Progress</span>
+                </div>
+                <div class="stat-number">{{ decided_apps }}</div>
+                <div class="stat-subtitle">Saved Drafts</div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-info mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Submitted</h5>
-                    <p class="card-text display-4">{{ submitted_apps }}</p>
-                </div>
+
+        <!-- My Applications Section -->
+        <div class="section-header">
+            <div>
+                <h2 class="section-title">My Applications</h2>
+                <p class="section-subtitle">Manage your ongoing and past funding requests.</p>
             </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-warning mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">In Review</h5>
-                    <p class="card-text display-4">{{ in_review_apps }}</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-success mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Decided</h5>
-                    <p class="card-text display-4">{{ decided_apps }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Submit New Application Button -->
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <a href="{% url 'submit_application' %}" class="btn btn-primary btn-lg">
-                <i class="fas fa-plus"></i> Submit New Application
+            <a href="{% url 'submit_application' %}" class="btn-primary-action">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Submit New Application
             </a>
         </div>
-    </div>
-    
-    <!-- My Applications Table -->
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">
-                    <h4>My Applications</h4>
-                </div>
-                <div class="card-body">
-                    {% if applications %}
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Title</th>
-                                    <th>Amount</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for app in applications %}
-                                <tr>
-                                    <td>{{ app.title }}</td>
-                                    <td>${{ app.amount_requested }}</td>
-                                    <td>
-                                        <span class="badge bg-{% if app.status == 'submitted' %}info{% elif app.status == 'in_review' %}warning{% elif app.status == 'decided' %}success{% endif %}">
-                                            {{ app.get_status_display }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <a href="{% url 'view_application' app.id %}" class="btn btn-sm btn-outline-primary">
-                                            View Details
-                                        </a>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+
+        <div class="applications-card">
+            {% if applications %}
+            <div class="applications-list">
+                {% for app in applications %}
+                <div class="application-item">
+                    <div class="app-icon {% cycle 'purple' 'green' 'blue' 'gray' %}">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
                     </div>
-                    {% else %}
-                    <p class="text-muted">You haven't submitted any applications yet.</p>
-                    {% endif %}
+                    <div class="app-details">
+                        <h4>{{ app.title }}</h4>
+                        <p>ID: APP-{{ app.id }}</p>
+                    </div>
+                    <div class="app-date">{{ app.created_at|date:"M d, Y" }}</div>
+                    <div class="app-amount">${{ app.amount_requested|floatformat:0 }}</div>
+                    <div>
+                        <span class="status-badge {% if app.status == 'submitted' %}submitted{% elif app.status == 'in_review' %}review{% elif app.status == 'decided' %}approved{% else %}draft{% endif %}">
+                            {% if app.status == 'submitted' %}
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle;">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                            {% endif %}
+                            {{ app.get_status_display }}
+                        </span>
+                    </div>
+                    <div class="app-action">
+                        <a href="{% url 'view_application' app.id %}" class="btn-view">
+                            View
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="pagination">
+                <div class="pagination-info">Showing 1-4 of {{ total_apps }} applications</div>
+                <div class="pagination-buttons">
+                    <button class="btn-pagination" disabled>Previous</button>
+                    <button class="btn-pagination">Next</button>
                 </div>
             </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">📄</div>
+                <h3>No Applications Yet</h3>
+                <p>You haven't submitted any applications yet.</p>
+                <a href="{% url 'submit_application' %}" class="btn-primary-action">Submit Your First Application</a>
+            </div>
+            {% endif %}
         </div>
     </div>
-</div>
-{% endblock %}
+</body>
+</html>

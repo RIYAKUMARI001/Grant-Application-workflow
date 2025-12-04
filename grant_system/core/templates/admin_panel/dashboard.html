@@ -117,10 +117,13 @@
     <!-- Management Buttons -->
     <div class="row">
         <div class="col-md-12">
-            <a href="{% url 'manage_rubrics' %}" class="btn btn-secondary btn-lg me-2">
+            <a href="{% url 'manage_rubrics' %}" class="btn btn-secondary btn-lg me-2 mb-2">
                 <i class="fas fa-cog"></i> Manage Rubrics
             </a>
-            <a href="{% url 'export_applications_csv' %}" class="btn btn-primary btn-lg">
+            <a href="{% url 'manage_users' %}" class="btn btn-info btn-lg me-2 mb-2">
+                <i class="fas fa-users"></i> Manage Users
+            </a>
+            <a href="{% url 'export_applications_csv' %}" class="btn btn-primary btn-lg mb-2">
                 <i class="fas fa-download"></i> Export CSV
             </a>
         </div>

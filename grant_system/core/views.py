@@ -8,6 +8,7 @@ from .forms import UserRegistrationForm, ApplicationForm
 from .models import User, Application, Review, Score, Rubric
 import csv
 from django.db.models import Avg
+from decimal import Decimal
 
 def home(request):
     if request.user.is_authenticated:
@@ -274,30 +275,133 @@ def manage_rubrics(request):
     rubrics = Rubric.objects.all()
     
     if request.method == 'POST':
-        # Simple form handling for adding a new rubric
-        name = request.POST.get('name')
-        max_score = request.POST.get('max_score', 10)
-        weight = request.POST.get('weight', 1.00)
+        action = request.POST.get('action')
         
-        if name:
+        if action == 'add':
+            # Add new rubric
+            name = request.POST.get('name')
+            max_score = request.POST.get('max_score', 10)
+            weight = request.POST.get('weight', 1.00)
+            
+            if name:
+                try:
+                    max_score = int(max_score)
+                    weight = Decimal(str(weight))  # Convert to Decimal
+                    
+                    # Validate weight doesn't exceed 100%
+                    total_weight = sum(r.weight for r in rubrics if r.active) + weight
+                    if total_weight > 100:
+                        messages.error(request, f'Total weight cannot exceed 100%. Current total: {total_weight}%')
+                    else:
+                        Rubric.objects.create(
+                            name=name,
+                            max_score=max_score,
+                            weight=weight
+                        )
+                        messages.success(request, 'Rubric created successfully!')
+                except (ValueError, Exception) as e:
+                    messages.error(request, 'Invalid values for max score or weight.')
+        
+        elif action == 'edit':
+            # Edit existing rubric
+            rubric_id = request.POST.get('rubric_id')
+            name = request.POST.get('name')
+            max_score = request.POST.get('max_score')
+            weight = request.POST.get('weight')
+            active = request.POST.get('active') == 'on'
+            
             try:
+                rubric = Rubric.objects.get(id=rubric_id)
                 max_score = int(max_score)
-                weight = float(weight)
-                Rubric.objects.create(
-                    name=name,
-                    max_score=max_score,
-                    weight=weight
-                )
-                messages.success(request, 'Rubric created successfully!')
-            except ValueError:
-                messages.error(request, 'Invalid values for max score or weight.')
+                weight = Decimal(str(weight))  # Convert to Decimal
+                
+                # Validate weight doesn't exceed 100%
+                total_weight = sum(r.weight for r in rubrics if r.active and r.id != rubric.id)
+                if active:
+                    total_weight += weight
+                
+                if total_weight > 100:
+                    messages.error(request, f'Total weight cannot exceed 100%. Current total would be: {total_weight}%')
+                else:
+                    rubric.name = name
+                    rubric.max_score = max_score
+                    rubric.weight = weight
+                    rubric.active = active
+                    rubric.save()
+                    messages.success(request, 'Rubric updated successfully!')
+            except (Rubric.DoesNotExist, ValueError, Exception):
+                messages.error(request, 'Invalid rubric or values.')
+        
+        elif action == 'delete':
+            # Delete rubric
+            rubric_id = request.POST.get('rubric_id')
+            try:
+                rubric = Rubric.objects.get(id=rubric_id)
+                rubric.delete()
+                messages.success(request, 'Rubric deleted successfully!')
+            except Rubric.DoesNotExist:
+                messages.error(request, 'Rubric not found.')
         
         return redirect('manage_rubrics')
     
+    # Calculate total weight
+    total_weight = sum(r.weight for r in rubrics if r.active)
+    
     context = {
         'rubrics': rubrics,
+        'total_weight': total_weight,
     }
     return render(request, 'admin_panel/manage_rubrics.html', context)
+
+@login_required
+def manage_users(request):
+    if not request.user.is_admin_role():
+        return HttpResponseForbidden("Access denied.")
+    
+    # Get all users
+    users = User.objects.all().order_by('role', 'username')
+    
+    # Count by role
+    applicants_count = User.objects.filter(role='applicant').count()
+    reviewers_count = User.objects.filter(role='reviewer').count()
+    admins_count = User.objects.filter(role='admin').count()
+    
+    # Find duplicate emails
+    from django.db.models import Count
+    duplicate_emails = User.objects.values('email').annotate(
+        count=Count('email')
+    ).filter(count__gt=1)
+    
+    context = {
+        'users': users,
+        'applicants_count': applicants_count,
+        'reviewers_count': reviewers_count,
+        'admins_count': admins_count,
+        'duplicate_emails': duplicate_emails,
+    }
+    return render(request, 'admin_panel/manage_users.html', context)
+
+@login_required
+def delete_user(request, user_id):
+    if not request.user.is_admin_role():
+        return HttpResponseForbidden("Access denied.")
+    
+    if request.method == 'POST':
+        try:
+            user = User.objects.get(id=user_id)
+            
+            # Prevent deleting yourself
+            if user.id == request.user.id:
+                messages.error(request, 'You cannot delete your own account!')
+                return redirect('manage_users')
+            
+            username = user.username
+            user.delete()
+            messages.success(request, f'User "{username}" deleted successfully!')
+        except User.DoesNotExist:
+            messages.error(request, 'User not found.')
+    
+    return redirect('manage_users')
 
 # Phase 5: Score Aggregation & Decision Views
 @login_required
