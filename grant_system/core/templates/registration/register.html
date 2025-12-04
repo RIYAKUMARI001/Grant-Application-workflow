@@ -1,76 +1,82 @@
-{% extends 'base.html' %}
-
-{% block title %}Register - Grant System{% endblock %}
-
-{% block content %}
-<div class="row justify-content-center mt-5">
-    <div class="col-md-6">
-        <div class="card shadow">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">Register New Account</h4>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - GrantFlow</title>
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">G</div>
+                <h1 class="auth-title">Create Account</h1>
+                <p class="auth-subtitle">Join GrantFlow to get started</p>
             </div>
-            <div class="card-body">
-                <form method="post">
-                    {% csrf_token %}
-                    
-                    <div class="mb-3">
-                        <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
-                        {{ form.username }}
-                        {% if form.username.errors %}
-                            <div class="text-danger">{{ form.username.errors }}</div>
-                        {% endif %}
-                    </div>
 
-                    <div class="mb-3">
-                        <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
-                        {{ form.email }}
-                        {% if form.email.errors %}
-                            <div class="text-danger">{{ form.email.errors }}</div>
-                        {% endif %}
-                    </div>
+            <form method="post" class="auth-form">
+                {% csrf_token %}
 
-                    <div class="mb-3">
-                        <label for="{{ form.password1.id_for_label }}" class="form-label">Password</label>
-                        {{ form.password1 }}
-                        {% if form.password1.errors %}
-                            <div class="text-danger">{{ form.password1.errors }}</div>
-                        {% endif %}
-                        <small class="form-text text-muted">
-                            Password must be at least 8 characters.
-                        </small>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="{{ form.password2.id_for_label }}" class="form-label">Confirm Password</label>
-                        {{ form.password2 }}
-                        {% if form.password2.errors %}
-                            <div class="text-danger">{{ form.password2.errors }}</div>
-                        {% endif %}
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="{{ form.role.id_for_label }}" class="form-label">
-                            <strong>Select Role</strong> <span class="text-danger">*</span>
-                        </label>
-                        {{ form.role }}
-                        {% if form.role.errors %}
-                            <div class="text-danger">{{ form.role.errors }}</div>
-                        {% endif %}
-                        <small class="form-text text-muted">
-                            Choose your role: Applicant (submit applications), Reviewer (review applications), or Admin (manage system).
-                        </small>
-                    </div>
-
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary btn-lg">Register</button>
-                    </div>
-                </form>
-
-                <div class="text-center mt-3">
-                    <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+                <div class="form-group">
+                    <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
+                    <input type="text" name="username" class="form-input" id="{{ form.username.id_for_label }}" placeholder="Choose a username" value="{{ form.username.value|default:'' }}" required>
+                    {% if form.username.errors %}
+                        <div class="form-error">{{ form.username.errors.0 }}</div>
+                    {% endif %}
                 </div>
+
+                <div class="form-group">
+                    <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
+                    <input type="email" name="email" class="form-input" id="{{ form.email.id_for_label }}" placeholder="your@email.com" value="{{ form.email.value|default:'' }}" required>
+                    {% if form.email.errors %}
+                        <div class="form-error">{{ form.email.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.password1.id_for_label }}" class="form-label">Password</label>
+                    <input type="password" name="password1" class="form-input" id="{{ form.password1.id_for_label }}" placeholder="Create a strong password" required>
+                    {% if form.password1.errors %}
+                        <div class="form-error">{{ form.password1.errors.0 }}</div>
+                    {% else %}
+                        <div class="form-help">Password must be at least 8 characters</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.password2.id_for_label }}" class="form-label">Confirm Password</label>
+                    <input type="password" name="password2" class="form-input" id="{{ form.password2.id_for_label }}" placeholder="Confirm your password" required>
+                    {% if form.password2.errors %}
+                        <div class="form-error">{{ form.password2.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.role.id_for_label }}" class="form-label">Select Role</label>
+                    <select name="role" class="form-select" id="{{ form.role.id_for_label }}" required>
+                        <option value="">Choose your role...</option>
+                        <option value="applicant" {% if form.role.value == 'applicant' %}selected{% endif %}>Applicant - Submit Applications</option>
+                        <option value="reviewer" {% if form.role.value == 'reviewer' %}selected{% endif %}>Reviewer - Review Applications</option>
+                        <option value="admin" {% if form.role.value == 'admin' %}selected{% endif %}>Admin - Manage System</option>
+                    </select>
+                    {% if form.role.errors %}
+                        <div class="form-error">{{ form.role.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn-submit">Create Account</button>
+            </form>
+
+            <div class="auth-footer">
+                Already have an account? <a href="{% url 'login' %}" class="auth-link">Sign in</a>
             </div>
         </div>
+
+        <div class="back-home">
+            <a href="{% url 'home' %}">← Back to Home</a>
+        </div>
     </div>
-</div>
-{% endblock %}
+</body>
+</html>

@@ -20,6 +20,8 @@ urlpatterns = [
     path('admin-panel/dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('admin-panel/assign/<int:app_id>/', views.assign_reviewers, name='assign_reviewers'),
     path('admin-panel/rubrics/', views.manage_rubrics, name='manage_rubrics'),
+    path('admin-panel/users/', views.manage_users, name='manage_users'),
+    path('admin-panel/users/delete/<int:user_id>/', views.delete_user, name='delete_user'),
     
     # Phase 5: Score Aggregation & Decision URLs
     path('admin-panel/scores/<int:app_id>/', views.view_scores, name='view_scores'),

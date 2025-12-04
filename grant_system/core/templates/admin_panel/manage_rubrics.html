@@ -6,6 +6,18 @@
 <div class="container mt-4">
     <h2 class="mb-4">Manage Rubrics</h2>
     
+    <!-- Weight Summary Alert -->
+    <div class="alert {% if total_weight == 100 %}alert-success{% elif total_weight > 100 %}alert-danger{% else %}alert-warning{% endif %} mb-4">
+        <strong>Total Active Weight: {{ total_weight }}%</strong>
+        {% if total_weight == 100 %}
+            <i class="fas fa-check-circle ms-2"></i> Perfect! Weights sum to 100%
+        {% elif total_weight > 100 %}
+            <i class="fas fa-exclamation-triangle ms-2"></i> Warning: Total weight exceeds 100%
+        {% else %}
+            <i class="fas fa-info-circle ms-2"></i> Note: Total weight is less than 100%
+        {% endif %}
+    </div>
+    
     <!-- Current Rubrics -->
     <div class="card mb-4">
         <div class="card-header">
@@ -21,6 +33,7 @@
                             <th>Max Score</th>
                             <th>Weight (%)</th>
                             <th>Status</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -36,7 +49,94 @@
                                     <span class="badge bg-secondary">Inactive</span>
                                 {% endif %}
                             </td>
+                            <td>
+                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" 
+                                        data-bs-target="#editModal{{ rubric.id }}">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="btn btn-sm btn-danger" data-bs-toggle="modal" 
+                                        data-bs-target="#deleteModal{{ rubric.id }}">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </td>
                         </tr>
+                        
+                        <!-- Edit Modal -->
+                        <div class="modal fade" id="editModal{{ rubric.id }}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Edit Rubric: {{ rubric.name }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="edit">
+                                        <input type="hidden" name="rubric_id" value="{{ rubric.id }}">
+                                        
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label class="form-label">Name</label>
+                                                <input type="text" class="form-control" name="name" 
+                                                       value="{{ rubric.name }}" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Max Score</label>
+                                                <input type="number" class="form-control" name="max_score" 
+                                                       value="{{ rubric.max_score }}" min="1" max="100" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Weight (%)</label>
+                                                <input type="number" class="form-control" name="weight" 
+                                                       value="{{ rubric.weight }}" step="0.01" min="0" max="100" required>
+                                            </div>
+                                            <div class="mb-3 form-check">
+                                                <input type="checkbox" class="form-check-input" name="active" 
+                                                       id="active{{ rubric.id }}" {% if rubric.active %}checked{% endif %}>
+                                                <label class="form-check-label" for="active{{ rubric.id }}">
+                                                    Active
+                                                </label>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Delete Modal -->
+                        <div class="modal fade" id="deleteModal{{ rubric.id }}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Delete Rubric</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="rubric_id" value="{{ rubric.id }}">
+                                        
+                                        <div class="modal-body">
+                                            <p>Are you sure you want to delete the rubric <strong>{{ rubric.name }}</strong>?</p>
+                                            <p class="text-danger">
+                                                <i class="fas fa-exclamation-triangle"></i> 
+                                                Warning: This action cannot be undone.
+                                            </p>
+                                        </div>
+                                        
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -55,6 +155,7 @@
         <div class="card-body">
             <form method="post">
                 {% csrf_token %}
+                <input type="hidden" name="action" value="add">
                 
                 <div class="row">
                     <div class="col-md-4 mb-3">
@@ -72,6 +173,9 @@
                         <label for="weight" class="form-label">Weight (%)</label>
                         <input type="number" class="form-control" id="weight" name="weight" 
                                value="1.00" step="0.01" min="0" max="100" required>
+                        <small class="form-text text-muted">
+                            Remaining weight: {{ 100|add:total_weight|floatformat:2|add:"-"|add:total_weight|floatformat:2 }}%
+                        </small>
                     </div>
                 </div>
                 
