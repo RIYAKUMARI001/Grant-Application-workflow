@@ -137,7 +137,7 @@
                                 max="{{ rubric.max_score }}" 
                                 placeholder="0"
                                 required
-                                oninput="updateScoreBar(this, {{ rubric.max_score }})"
+                                data-max-score="{{ rubric.max_score }}"
                             >
                             <div class="score-range">
                                 <div class="score-fill" id="fill_{{ rubric.id }}" style="width: 0%"></div>
@@ -179,13 +179,84 @@
     <script>
         function updateScoreBar(input, maxScore) {
             const value = parseInt(input.value) || 0;
-            const percentage = (value / maxScore) * 100;
+            // Ensure value is within bounds
+            const clampedValue = Math.min(Math.max(value, 0), maxScore);
+            const percentage = (clampedValue / maxScore) * 100;
             const fillId = 'fill_' + input.id.split('_')[1];
             const fillElement = document.getElementById(fillId);
             if (fillElement) {
                 fillElement.style.width = percentage + '%';
             }
         }
+        
+        function validateScore(input, maxScore) {
+            let value = parseInt(input.value);
+            
+            // Check if value is a valid number
+            if (isNaN(value)) {
+                input.value = '';
+                updateScoreBar(input, maxScore);
+                return;
+            }
+            
+            // Clamp value between 0 and maxScore
+            if (value < 0) {
+                value = 0;
+            } else if (value > maxScore) {
+                value = maxScore;
+            }
+            
+            input.value = value;
+            updateScoreBar(input, maxScore);
+        }
+        
+        // Initialize score bars on page load and attach event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            const scoreInputs = document.querySelectorAll('.score-input');
+            scoreInputs.forEach(function(input) {
+                const maxScore = parseInt(input.getAttribute('data-max-score'));
+                
+                // Set initial value for the progress bar
+                updateScoreBar(input, maxScore);
+                
+                // Attach event listeners
+                input.addEventListener('input', function() {
+                    updateScoreBar(this, maxScore);
+                });
+                
+                input.addEventListener('change', function() {
+                    validateScore(this, maxScore);
+                });
+            });
+        });
+        
+        // Form submission validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    let isValid = true;
+                    const scoreInputs = document.querySelectorAll('.score-input[required]');
+                    
+                    scoreInputs.forEach(function(input) {
+                        const value = parseInt(input.value);
+                        const maxScore = parseInt(input.getAttribute('data-max-score'));
+                        
+                        if (isNaN(value) || value < 0 || value > maxScore) {
+                            isValid = false;
+                            input.style.borderColor = '#e53e3e';
+                        } else {
+                            input.style.borderColor = '#e2e8f0';
+                        }
+                    });
+                    
+                    if (!isValid) {
+                        e.preventDefault();
+                        alert('Please ensure all scores are valid numbers within the allowed range.');
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>
