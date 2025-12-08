@@ -33,6 +33,10 @@ A Django-based web application for managing grant applications with role-based w
 - **Audit Trail**: Comprehensive logging of all system activities
 - **Search & Filter**: Advanced filtering capabilities for applications and reviews
 
+  
+Image Glimpse:
+  <img width="1494" height="865" alt="image" src="https://github.com/user-attachments/assets/e8622cf6-e7df-4204-8352-d656a5cccce7" />
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -216,10 +220,6 @@ python manage.py migrate
 gunicorn grant_system.wsgi:application
 ```
 
-## 📸 Screenshots
-
-*<img width="1494" height="865" alt="image" src="https://github.com/user-attachments/assets/e8622cf6-e7df-4204-8352-d656a5cccce7" />
-*
 
 1. **Home Page** - Welcoming interface with role selection
 2. **Applicant Dashboard** - Application management and tracking
